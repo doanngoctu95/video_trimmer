@@ -168,6 +168,10 @@ class _FixedTrimViewerState extends State<FixedTrimViewer>
   AnimationController? _animationController;
   late Tween<double> _linearTween;
 
+  get _distanceFromLeft => _startPos.dx;
+
+  get _distanceFromRight => widget.viewerWidth - _endPos.dx;
+
   /// Quick access to VideoPlayerController, only not null after [TrimmerEvent.initialized]
   /// has been emitted.
   VideoPlayerController get videoPlayerController =>
@@ -196,13 +200,15 @@ class _FixedTrimViewerState extends State<FixedTrimViewer>
       log('RENDER BOX: $trimmerActualWidth');
       if (trimmerActualWidth == null) return;
       _thumbnailViewerW = trimmerActualWidth;
+
       _initializeVideoController();
       videoPlayerController.seekTo(const Duration(milliseconds: 0));
       _numberOfThumbnails = trimmerActualWidth ~/ _thumbnailViewerH;
       log('numberOfThumbnails: $_numberOfThumbnails');
       log('thumbnailViewerW: $_thumbnailViewerW');
       setState(() {
-        _thumbnailViewerW = _numberOfThumbnails * _thumbnailViewerH;
+        // _thumbnailViewerW = _numberOfThumbnails * _thumbnailViewerH;
+
 
         final FixedThumbnailViewer thumbnailWidget = FixedThumbnailViewer(
           videoFile: _videoFile!,
@@ -471,18 +477,45 @@ class _FixedTrimViewerState extends State<FixedTrimViewer>
               circlePaintColor: widget.editorProperties.circlePaintColor,
               borderPaintColor: widget.editorProperties.borderPaintColor,
               scrubberPaintColor: widget.editorProperties.scrubberPaintColor,
+              usingLimitLine: widget.editorProperties.usingLimitLine,
+              // showScrubber: false,
             ),
             child: ClipRRect(
               borderRadius:
                   BorderRadius.circular(widget.areaProperties.borderRadius),
-              child: Container(
-                key: _trimmerAreaKey,
-                color: Colors.grey[900],
-                height: _thumbnailViewerH,
-                width: _thumbnailViewerW == 0.0
-                    ? widget.viewerWidth
-                    : _thumbnailViewerW,
-                child: thumbnailWidget ?? Container(),
+              child: Stack(
+                children: [
+                  Container(
+                    key: _trimmerAreaKey,
+                    color: Colors.grey[900],
+                    height: _thumbnailViewerH,
+                    width: _thumbnailViewerW == 0.0
+                        ? widget.viewerWidth
+                        : _thumbnailViewerW,
+                    child: thumbnailWidget ?? Container(),
+                  ),
+                  SizedBox(
+                    width: _thumbnailViewerW == 0.0
+                        ? widget.viewerWidth
+                        : _thumbnailViewerW,
+                    height: _thumbnailViewerH,
+                    child: Row(
+                      children: [
+                        Container(
+                          color: Colors.grey.withOpacity(0.5),
+                          height: _thumbnailViewerH,
+                          width: _distanceFromLeft,
+                        ),
+                        const Spacer(),
+                        Container(
+                          color: Colors.grey.withOpacity(0.5),
+                          height: _thumbnailViewerH,
+                          width: _distanceFromRight,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
             ),
           ),

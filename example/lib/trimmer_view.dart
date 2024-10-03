@@ -90,28 +90,27 @@ class _TrimmerViewState extends State<TrimmerView> {
                   child: VideoViewer(trimmer: _trimmer),
                 ),
                 Center(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: TrimViewer(
-                      trimmer: _trimmer,
-                      viewerHeight: 50.0,
-                      viewerWidth: MediaQuery.of(context).size.width,
-                      durationStyle: DurationStyle.FORMAT_MM_SS,
-                      maxVideoLength: const Duration(seconds: 10),
-                      editorProperties: TrimEditorProperties(
-                        borderPaintColor: Colors.yellow,
-                        borderWidth: 4,
-                        borderRadius: 5,
-                        circlePaintColor: Colors.yellow.shade800,
-                      ),
-                      areaProperties: TrimAreaProperties.edgeBlur(
-                        thumbnailQuality: 10,
-                      ),
-                      onChangeStart: (value) => _startValue = value,
-                      onChangeEnd: (value) => _endValue = value,
-                      onChangePlaybackState: (value) =>
-                          setState(() => _isPlaying = value),
+                  child: TrimViewer(
+                    trimmer: _trimmer,
+                    viewerHeight: 50.0,
+                    type: ViewerType.fixed,
+                    viewerWidth: MediaQuery.of(context).size.width,
+                    durationStyle: DurationStyle.FORMAT_MM_SS,
+                    maxVideoLength: const Duration(seconds: 60),
+                    editorProperties: TrimEditorProperties(
+                      borderPaintColor: Colors.yellow,
+                      borderWidth: 4,
+                      borderRadius: 5,
+                      circlePaintColor: Colors.yellow.shade800,
+                      usingLimitLine: true,
                     ),
+                    areaProperties: TrimAreaProperties.edgeBlur(
+                      thumbnailQuality: 10,
+                    ),
+                    onChangeStart: (value) => _startValue = value,
+                    onChangeEnd: (value) => _endValue = value,
+                    onChangePlaybackState: (value) =>
+                        setState(() => _isPlaying = value),
                   ),
                 ),
                 TextButton(

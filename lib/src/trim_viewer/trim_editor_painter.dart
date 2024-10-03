@@ -48,6 +48,8 @@ class TrimEditorPainter extends CustomPainter {
   /// `Colors.white`.
   final Color scrubberPaintColor;
 
+  final bool usingLimitLine;
+
   /// For drawing the trim editor slider
   ///
   /// The required parameters are [startPos], [endPos]
@@ -115,6 +117,7 @@ class TrimEditorPainter extends CustomPainter {
     this.borderPaintColor = Colors.white,
     this.circlePaintColor = Colors.white,
     this.scrubberPaintColor = Colors.white,
+    this.usingLimitLine = false,
   });
 
   @override
@@ -153,7 +156,13 @@ class TrimEditorPainter extends CustomPainter {
       }
     }
 
-    canvas.drawRRect(roundedRect, borderPaint);
+    if(usingLimitLine) {
+      canvas.drawLine(Offset(startPos.dx, startPos.dy), Offset(startPos.dx, endPos.dy), borderPaint);
+      canvas.drawLine(Offset(endPos.dx, startPos.dy), Offset(endPos.dx, endPos.dy), borderPaint);
+    } else {
+      canvas.drawRRect(roundedRect, borderPaint);
+    }
+
     // Paint start holder
     canvas.drawCircle(
         startPos + Offset(0, endPos.dy / 2), startCircleSize, circlePaint);
