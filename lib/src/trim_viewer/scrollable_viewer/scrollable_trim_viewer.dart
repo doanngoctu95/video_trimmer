@@ -27,6 +27,7 @@ class ScrollableTrimViewer extends StatefulWidget {
 
   /// For defining the maximum length of the output video.
   final Duration maxVideoLength;
+  final Duration minVideoLength;
 
   /// For showing the start and the end point of the
   /// video on top of the trimmer area.
@@ -122,6 +123,7 @@ class ScrollableTrimViewer extends StatefulWidget {
     super.key,
     required this.trimmer,
     required this.maxVideoLength,
+    required this.minVideoLength,
     required this.onThumbnailLoadingComplete,
     this.viewerWidth = 50 * 8,
     this.viewerHeight = 50,
@@ -180,6 +182,7 @@ class _ScrollableTrimViewerState extends State<ScrollableTrimViewer>
 
   double? fraction;
   double? maxLengthPixels;
+  double? minLengthPixels;
 
   ScrollableThumbnailViewer? thumbnailWidget;
 
@@ -364,6 +367,14 @@ class _ScrollableTrimViewerState extends State<ScrollableTrimViewer>
         log('trimmerFraction: $trimmerFraction');
         final trimmerCover = trimmerFraction * trimAreaLength;
         maxLengthPixels = trimmerCover;
+
+        minLengthPixels = trimmerCover /
+            (widget.maxVideoLength.inMilliseconds /
+                widget.minVideoLength.inMilliseconds);
+
+        log('maxLengthPixels: $maxLengthPixels');
+        log('minLengthPixels: $minLengthPixels');
+
         _endPos = Offset(trimmerCover, thumbnailHeight);
         log('START: $_startPos, END: $_endPos');
 
@@ -481,7 +492,8 @@ class _ScrollableTrimViewerState extends State<ScrollableTrimViewer>
       _startCircleSize = widget.editorProperties.circleSizeOnDrag;
       if ((_startPos.dx + details.delta.dx >= 0) &&
           (_startPos.dx + details.delta.dx <= _endPos.dx) &&
-          !(_endPos.dx - _startPos.dx - details.delta.dx > maxLengthPixels!)) {
+          !(_endPos.dx - _startPos.dx - details.delta.dx > maxLengthPixels!) &&
+          !(_endPos.dx - _startPos.dx - details.delta.dx < minLengthPixels!)) {
         _startPos += details.delta;
         _onStartDragged();
       }
@@ -499,7 +511,8 @@ class _ScrollableTrimViewerState extends State<ScrollableTrimViewer>
       _endCircleSize = widget.editorProperties.circleSizeOnDrag;
       if ((_endPos.dx + details.delta.dx <= _thumbnailViewerW) &&
           (_endPos.dx + details.delta.dx >= _startPos.dx) &&
-          !(_endPos.dx - _startPos.dx + details.delta.dx > maxLengthPixels!)) {
+          !(_endPos.dx - _startPos.dx + details.delta.dx > maxLengthPixels!) &&
+          !(_endPos.dx - _startPos.dx + details.delta.dx < minLengthPixels!)) {
         _endPos += details.delta;
         _onEndDragged();
       }

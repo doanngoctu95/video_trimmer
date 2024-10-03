@@ -97,6 +97,7 @@ class _TrimmerViewState extends State<TrimmerView> {
                     viewerWidth: MediaQuery.of(context).size.width,
                     durationStyle: DurationStyle.FORMAT_MM_SS,
                     maxVideoLength: const Duration(seconds: 60),
+                    minVideoLength: const Duration(seconds: 10),
                     editorProperties: TrimEditorProperties(
                       borderPaintColor: Colors.yellow,
                       borderWidth: 4,

@@ -42,6 +42,12 @@ class TrimViewer extends StatefulWidget {
   /// specifying this property is mandatory.
   final Duration maxVideoLength;
 
+  /// For defining the minimum length of the output video.
+  ///
+  /// **NOTE:** When explicitly setting the `type` to `scrollable`,
+  /// specifying this property is mandatory.
+  final Duration minVideoLength;
+
   /// For showing the start and the end point of the
   /// video on top of the trimmer area.
   ///
@@ -171,6 +177,7 @@ class TrimViewer extends StatefulWidget {
     Key? key,
     required this.trimmer,
     this.maxVideoLength = const Duration(milliseconds: 0),
+    this.minVideoLength = const Duration(milliseconds: 0),
     this.type = ViewerType.auto,
     this.viewerWidth = 50 * 8,
     this.viewerHeight = 50,
@@ -201,6 +208,7 @@ class _TrimViewerState extends State<TrimViewer> with TickerProviderStateMixin {
         final totalDuration =
             widget.trimmer.videoPlayerController!.value.duration;
         final maxVideoLength = widget.maxVideoLength;
+        final minVideoLength = widget.minVideoLength;
         final paddingFraction = widget.paddingFraction;
         final trimAreaDuration = Duration(
             milliseconds: (maxVideoLength.inMilliseconds +
@@ -223,6 +231,7 @@ class _TrimViewerState extends State<TrimViewer> with TickerProviderStateMixin {
     final scrollableViewer = ScrollableTrimViewer(
       trimmer: widget.trimmer,
       maxVideoLength: widget.maxVideoLength,
+      minVideoLength: widget.minVideoLength,
       viewerWidth: widget.viewerWidth,
       viewerHeight: widget.viewerHeight,
       showDuration: widget.showDuration,
@@ -244,6 +253,7 @@ class _TrimViewerState extends State<TrimViewer> with TickerProviderStateMixin {
     final fixedTrimViewer = FixedTrimViewer(
       trimmer: widget.trimmer,
       maxVideoLength: widget.maxVideoLength,
+      minVideoLength: widget.minVideoLength,
       viewerWidth: widget.viewerWidth,
       viewerHeight: widget.viewerHeight,
       showDuration: widget.showDuration,
