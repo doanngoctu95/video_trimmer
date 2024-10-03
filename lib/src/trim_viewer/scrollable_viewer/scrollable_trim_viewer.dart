@@ -143,6 +143,7 @@ class ScrollableTrimViewer extends StatefulWidget {
 class _ScrollableTrimViewerState extends State<ScrollableTrimViewer>
     with TickerProviderStateMixin {
   final _trimmerAreaKey = GlobalKey();
+
   File? get _videoFile => widget.trimmer.currentVideoFile;
 
   double _videoStartPos = 0.0;
@@ -172,6 +173,10 @@ class _ScrollableTrimViewerState extends State<ScrollableTrimViewer>
   late double _startCircleSize;
   late double _endCircleSize;
   late double _borderRadius;
+
+  get _distanceFromLeft => _startPos.dx;
+
+  get _distanceFromRight => widget.viewerWidth - _endPos.dx;
 
   double? fraction;
   double? maxLengthPixels;
@@ -631,6 +636,7 @@ class _ScrollableTrimViewerState extends State<ScrollableTrimViewer>
                   borderPaintColor: widget.editorProperties.borderPaintColor,
                   scrubberPaintColor:
                       widget.editorProperties.scrubberPaintColor,
+                  usingLimitLine: widget.editorProperties.usingLimitLine,
                 ),
                 child: Stack(
                   children: [
@@ -671,57 +677,29 @@ class _ScrollableTrimViewerState extends State<ScrollableTrimViewer>
                             ),
                             height: _thumbnailViewerH,
                             width: widget.viewerWidth,
-                            child: Row(
-                              children: [
-                                AnimatedOpacity(
-                                    opacity:
-                                        _scrollController.position.pixels != 0.0
-                                            ? 1.0
-                                            : 0.0,
-                                    duration: const Duration(milliseconds: 300),
-                                    child: widget.areaProperties.startIcon),
-                                const Spacer(),
-                                AnimatedOpacity(
-                                  opacity: _scrollController.position.pixels !=
-                                          _scrollController
-                                              .position.maxScrollExtent
-                                      ? 1.0
-                                      : 0.0,
-                                  duration: const Duration(milliseconds: 300),
-                                  child: widget.areaProperties.endIcon,
-                                ),
-                              ],
+                            child: SizedBox(
+                              width: _thumbnailViewerW == 0.0
+                                  ? widget.viewerWidth
+                                  : _thumbnailViewerW,
+                              height: _thumbnailViewerH,
+                              child: Row(
+                                children: [
+                                  Container(
+                                    color: Colors.grey.withOpacity(0.5),
+                                    height: _thumbnailViewerH,
+                                    width: _distanceFromLeft,
+                                  ),
+                                  const Spacer(),
+                                  Container(
+                                    color: Colors.grey.withOpacity(0.5),
+                                    height: _thumbnailViewerH,
+                                    width: _distanceFromRight,
+                                  ),
+                                ],
+                              ),
                             ),
                           )
                         : const SizedBox(),
-                  ],
-                ),
-              ),
-              // This widget is in development for making the DEBUGGING
-              // process of this package easier
-              Visibility(
-                visible: false,
-                child: Row(
-                  children: [
-                    Container(
-                      color: Colors.red.withOpacity(0.6),
-                      height: _thumbnailViewerH,
-                      // 2% of total trimmer width
-                      width: (_thumbnailViewerW == 0.0
-                              ? widget.viewerWidth
-                              : _thumbnailViewerW) *
-                          0.02,
-                    ),
-                    const Spacer(),
-                    Container(
-                      color: Colors.red.withOpacity(0.6),
-                      height: _thumbnailViewerH,
-                      // 2% of total trimmer width
-                      width: (_thumbnailViewerW == 0.0
-                              ? widget.viewerWidth
-                              : _thumbnailViewerW) *
-                          0.02,
-                    ),
                   ],
                 ),
               ),
