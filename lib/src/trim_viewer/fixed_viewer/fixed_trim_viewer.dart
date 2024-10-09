@@ -70,6 +70,8 @@ class FixedTrimViewer extends StatefulWidget {
 
   final VoidCallback onThumbnailLoadingComplete;
 
+  final EdgeInsets? paddingView;
+
   /// Widget for displaying the video trimmer.
   ///
   /// This has frame wise preview of the video with a
@@ -130,6 +132,7 @@ class FixedTrimViewer extends StatefulWidget {
     this.onChangePlaybackState,
     this.editorProperties = const TrimEditorProperties(),
     this.areaProperties = const FixedTrimAreaProperties(),
+    this.paddingView,
   });
 
   @override
@@ -139,6 +142,7 @@ class FixedTrimViewer extends StatefulWidget {
 class _FixedTrimViewerState extends State<FixedTrimViewer>
     with TickerProviderStateMixin {
   final _trimmerAreaKey = GlobalKey();
+
   File? get _videoFile => widget.trimmer.currentVideoFile;
 
   double _videoStartPos = 0.0;
@@ -174,7 +178,11 @@ class _FixedTrimViewerState extends State<FixedTrimViewer>
 
   get _distanceFromLeft => _startPos.dx;
 
-  get _distanceFromRight => widget.viewerWidth - _endPos.dx;
+  get _distanceFromRight =>
+      widget.viewerWidth -
+      (widget.paddingView?.left ?? 0) -
+      (widget.paddingView?.right ?? 0) -
+      _endPos.dx;
 
   /// Quick access to VideoPlayerController, only not null after [TrimmerEvent.initialized]
   /// has been emitted.
@@ -200,7 +208,9 @@ class _FixedTrimViewerState extends State<FixedTrimViewer>
     SchedulerBinding.instance.addPostFrameCallback((_) {
       final renderBox =
           _trimmerAreaKey.currentContext?.findRenderObject() as RenderBox?;
-      final trimmerActualWidth = renderBox?.size.width;
+      final trimmerActualWidth = (renderBox?.size.width ?? 0) -
+          widget.paddingView!.left -
+          widget.paddingView!.right;
       log('RENDER BOX: $trimmerActualWidth');
       if (trimmerActualWidth == null) return;
       _thumbnailViewerW = trimmerActualWidth;
@@ -212,7 +222,6 @@ class _FixedTrimViewerState extends State<FixedTrimViewer>
       log('thumbnailViewerW: $_thumbnailViewerW');
       setState(() {
         // _thumbnailViewerW = _numberOfThumbnails * _thumbnailViewerH;
-
 
         final FixedThumbnailViewer thumbnailWidget = FixedThumbnailViewer(
           videoFile: _videoFile!,
@@ -238,7 +247,6 @@ class _FixedTrimViewerState extends State<FixedTrimViewer>
           maxLengthPixels = _thumbnailViewerW;
         }
 
-
         if (widget.minVideoLength > const Duration(milliseconds: 0) &&
             widget.minVideoLength < totalDuration) {
           if (widget.minVideoLength < totalDuration) {
@@ -251,7 +259,8 @@ class _FixedTrimViewerState extends State<FixedTrimViewer>
           minLengthPixels = _thumbnailViewerW;
         }
 
-        print('totalDuration: $totalDuration - _thumbnailViewerW: $_thumbnailViewerW - maxLengthPixels: $maxLengthPixels - minLengthPixels: $minLengthPixels');
+        print(
+            'totalDuration: $totalDuration - _thumbnailViewerW: $_thumbnailViewerW - maxLengthPixels: $maxLengthPixels - minLengthPixels: $minLengthPixels');
 
         _videoEndPos = fraction != null
             ? _videoDuration.toDouble() * fraction!
@@ -523,13 +532,13 @@ class _FixedTrimViewerState extends State<FixedTrimViewer>
                     child: Row(
                       children: [
                         Container(
-                          color: Colors.grey.withOpacity(0.5),
+                          color: Colors.grey.withOpacity(0.8),
                           height: _thumbnailViewerH,
                           width: _distanceFromLeft,
                         ),
                         const Spacer(),
                         Container(
-                          color: Colors.grey.withOpacity(0.5),
+                          color: Colors.grey.withOpacity(0.8),
                           height: _thumbnailViewerH,
                           width: _distanceFromRight,
                         ),
