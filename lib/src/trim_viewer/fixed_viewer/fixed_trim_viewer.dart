@@ -248,19 +248,20 @@ class _FixedTrimViewerState extends State<FixedTrimViewer>
         }
 
         if (widget.minVideoLength > const Duration(milliseconds: 0) &&
-            widget.minVideoLength < totalDuration) {
-          if (widget.minVideoLength < totalDuration) {
-            fraction = widget.minVideoLength.inMilliseconds /
-                totalDuration.inMilliseconds;
-
-            minLengthPixels = _thumbnailViewerW * fraction!;
-          }
+            widget.minVideoLength > totalDuration) {
+          // if (widget.minVideoLength > totalDuration) {
+          //   fraction = totalDuration.inMilliseconds /
+          //       widget.minVideoLength.inMilliseconds;
+          //
+          //   minLengthPixels = _thumbnailViewerW * fraction!;
+          // }
         } else {
           minLengthPixels = _thumbnailViewerW;
         }
 
         print(
-            'totalDuration: $totalDuration - _thumbnailViewerW: $_thumbnailViewerW - maxLengthPixels: $maxLengthPixels - minLengthPixels: $minLengthPixels');
+            'totalDuration: $totalDuration - _thumbnailViewerW: $_thumbnailViewerW - maxLengthPixels: $maxLengthPixels - minLengthPixels: $minLengthPixels -- _videoDuration: $_videoDuration'
+            'fraction: $fraction');
 
         _videoEndPos = fraction != null
             ? _videoDuration.toDouble() * fraction!
