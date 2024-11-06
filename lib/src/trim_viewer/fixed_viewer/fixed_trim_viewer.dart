@@ -249,14 +249,13 @@ class _FixedTrimViewerState extends State<FixedTrimViewer>
 
         if (widget.minVideoLength > const Duration(milliseconds: 0) &&
             widget.minVideoLength > totalDuration) {
-          // if (widget.minVideoLength > totalDuration) {
-          //   fraction = totalDuration.inMilliseconds /
-          //       widget.minVideoLength.inMilliseconds;
-          //
-          //   minLengthPixels = _thumbnailViewerW * fraction!;
-          // }
+          if (widget.minVideoLength > totalDuration) {
+
+            minLengthPixels = _thumbnailViewerW;
+          }
         } else {
-          minLengthPixels = _thumbnailViewerW;
+          fraction = widget.minVideoLength.inMilliseconds / totalDuration.inMilliseconds;
+          minLengthPixels = _thumbnailViewerW * fraction!;
         }
 
         print(
